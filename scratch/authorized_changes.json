@@ -2,64 +2,49 @@
   {
     "number": 1,
     "action": "update",
-    "labels_to_add": [
-      "p0"
-    ],
+    "labels_to_add": ["p0"],
     "labels_to_remove": [],
     "comment": "Grooming update: this is the foundational unblocked setup issue and should be the immediate next task before downstream code/configuration work. Added `p0`."
   },
   {
     "number": 2,
     "action": "update",
-    "labels_to_add": [
-      "blocked"
-    ],
+    "labels_to_add": ["blocked"],
     "labels_to_remove": [],
     "comment": "Grooming update: this depends on #1 establishing the Next.js project/package structure before ESLint, Prettier, Husky, lint-staged, and TypeScript checks can be configured reliably. Added `blocked`."
   },
   {
     "number": 3,
     "action": "update",
-    "labels_to_add": [
-      "blocked"
-    ],
+    "labels_to_add": ["blocked"],
     "labels_to_remove": [],
     "comment": "Grooming update: this depends on #1 creating the Next.js app and baseline package/testable structure before Vitest/React Testing Library can be installed and validated. Added `blocked`."
   },
   {
     "number": 4,
     "action": "update",
-    "labels_to_add": [
-      "p1",
-      "quick"
-    ],
+    "labels_to_add": ["p1", "quick"],
     "labels_to_remove": [],
     "comment": "Grooming update: this documentation/setup issue is unblocked and can proceed in parallel with the initial scaffold. It is a relatively contained docs task, so added `p1` and `quick`."
   },
   {
     "number": 5,
     "action": "update",
-    "labels_to_add": [
-      "blocked"
-    ],
+    "labels_to_add": ["blocked"],
     "labels_to_remove": [],
     "comment": "Grooming update: this depends on #1 creating the app/package structure and service directories before Gemini client wrappers and mocks can be added cleanly. Added `blocked`."
   },
   {
     "number": 6,
     "action": "update",
-    "labels_to_add": [
-      "blocked"
-    ],
+    "labels_to_add": ["blocked"],
     "labels_to_remove": [],
     "comment": "Grooming update: this depends on #1 establishing the project scaffold/package setup before Drizzle, Neon packages, schema files, and migration scripts can be installed and wired up. Added `blocked`."
   },
   {
     "number": 7,
     "action": "update",
-    "labels_to_add": [
-      "blocked"
-    ],
+    "labels_to_add": ["blocked"],
     "labels_to_remove": [],
     "comment": "Grooming update: this depends on #6 because Clerk profile synchronization needs the Neon `users` table and database client/schema to exist first. Added `blocked`."
   }

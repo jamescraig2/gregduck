@@ -1,4 +1,4 @@
-import styles from './page.module.css'
+import styles from './page.module.css';
 
 export default function Home() {
   return (
@@ -6,5 +6,5 @@ export default function Home() {
       <h1 className={styles.title}>Greg Duck</h1>
       <p className={styles.tagline}>Discover the wildlife around you.</p>
     </main>
-  )
+  );
 }

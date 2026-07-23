@@ -3,27 +3,21 @@
     "number": 1,
     "action": "update",
     "labels_to_add": [],
-    "labels_to_remove": [
-      "setup"
-    ],
+    "labels_to_remove": ["setup"],
     "comment": ""
   },
   {
     "number": 2,
     "action": "update",
     "labels_to_add": [],
-    "labels_to_remove": [
-      "dx"
-    ],
+    "labels_to_remove": ["dx"],
     "comment": ""
   },
   {
     "number": 4,
     "action": "update",
     "labels_to_add": [],
-    "labels_to_remove": [
-      "setup"
-    ],
+    "labels_to_remove": ["setup"],
     "comment": ""
   }
 ]

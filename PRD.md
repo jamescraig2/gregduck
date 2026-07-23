@@ -7,14 +7,17 @@
 ---
 
 ## 1. Executive Summary & Vision
-Gray Duck encourages users to explore their real-world surroundings and catalog the animals they encounter. By taking photos of local wildlife (squirrels, ducks, rabbits, birds), users discover unique, AI-named animals with generated backstories. 
+
+Gray Duck encourages users to explore their real-world surroundings and catalog the animals they encounter. By taking photos of local wildlife (squirrels, ducks, rabbits, birds), users discover unique, AI-named animals with generated backstories.
 
 To keep the game grounded in reality, geographic areas ("zones") have carrying capacities (saturation points) for different species. Once a zone is saturated, new photos of a species will match to a previously discovered animal in that zone instead of generating a new one, letting users "interact" with local animal residents.
 
 ---
 
 ## 2. Core v0 MVP Feature Scope
+
 To get the bare minimum app off the ground, the v0 scope includes:
+
 1. **Interactive Map Interface**: A map showing animal discoveries. Markers are grouped using clustering.
 2. **Camera & Capture Flow**: A web-based camera interface that captures photos along with the user's GPS coordinates.
 3. **AI Species Verification & Metadata Generation**: Utilizing the Google Gemini API to analyze the photo, verify if it's an animal, determine the species, and generate a creative name and backstory.
@@ -38,6 +41,7 @@ graph TD
 ```
 
 ### Key Technical Specs:
+
 - **Framework**: Next.js App Router (TypeScript).
 - **Deployment**: Vercel.
 - **Database**: Neon Serverless Postgres.
@@ -99,6 +103,7 @@ export const encounters = pgTable('encounters', {
 To make the app feel realistic, we need a flexible matching layer. The algorithm will start simple (GPS proximity within an H3 cell) but must be designed to swap out for advanced visual embedding or Gemini-based visual matching in the future.
 
 ### Code Abstraction Strategy
+
 All matching logic must be isolated in a dedicated service module: `/services/matching/`.
 
 We define a standard signature for the matcher:
@@ -125,6 +130,7 @@ export interface AnimalMatchingStrategy {
 ```
 
 ### Initial v0 Strategy: `ProximityMatchingStrategy`
+
 1. Define the user's active zone as their current H3 cell plus its 6 adjacent neighbors (1-ring radius, total of 7 cells computed using `gridDisk(h3Index, 1)`).
 2. Query `existingAnimalsInZone` across these 7 H3 cells for the specified `species` (after Gemini results are normalized to lowercase canonical names like `squirrel`, `duck`, `rabbit`, `goose`, `bird`, `other`).
 3. **If count < Saturation Limit** (configured per species in `/services/matching/config.ts`, defaulting to 3 for undefined species):
@@ -134,12 +140,14 @@ export interface AnimalMatchingStrategy {
    - Return `{ isNewDiscovery: false, matchedAnimal: closestAnimal }`.
 
 ### Future Swappable Strategies (Planned)
-- **`GeminiVisualMatcher`**: Send the user's photo and the photos/stories of existing animals in the zone to Gemini. Ask: *"Is the animal in Photo A most likely the same individual as in Photo B, C, or D?"*
+
+- **`GeminiVisualMatcher`**: Send the user's photo and the photos/stories of existing animals in the zone to Gemini. Ask: _"Is the animal in Photo A most likely the same individual as in Photo B, C, or D?"_
 - **`EmbeddingMatcher`**: Compare vector embeddings of the animal photos using a lightweight image embedding model.
 
 ---
 
 ## 6. Verification & Testing Requirements
+
 - **Unit Tests**:
   - `h3-js` resolution 9 index computations.
   - Saturation logic boundaries (under capacity vs. at capacity).
@@ -151,7 +159,9 @@ export interface AnimalMatchingStrategy {
 ---
 
 ## 7. Next Steps & Scope of Issues
+
 Following this PRD, the initial backlog will be divided into the following implementation tickets:
+
 1. **[Issue 1] DB & Auth Boilerplate**: Setup Drizzle ORM, database connection pools to Neon, and build a helper/middleware for Clerk lazy auth user profile syncing.
 2. **[Issue 2] Matching Engine & H3 Index Service**: Implement the isolated `MatchingService` with `ProximityMatchingStrategy` (querying the center H3 cell and its 6 neighbors) and unit tests.
 3. **[Issue 3] Gemini API Pipeline**: Create an API route that parses multipart image uploads, verifies the animal via Gemini API (utilizing JSON schema outputs), and if valid, uploads the image to Vercel Blob, invokes matching logic, and writes database records (auto-creating both the animal and encounter).
