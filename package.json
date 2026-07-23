@@ -7,8 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest run --config tests/vitest.config.ts",
-    "test:smoke": "node tests/smoke.mjs"
+    "test:smoke": "node tests/smoke.mjs",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "16.2.11",
@@ -24,7 +27,12 @@
     "@vitejs/plugin-react": "^6.0.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "lint-staged": "^17.2.0",
+    "prettier": "^3.9.6",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }

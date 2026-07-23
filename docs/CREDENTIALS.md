@@ -131,10 +131,10 @@ Neon provides a serverless PostgreSQL database with connection pooling.
 2. Go to **Connection Details** in the dashboard.
 3. Copy both connection strings:
 
-| Type   | Description                                   | Example                                     |
-| ------ | --------------------------------------------- | ------------------------------------------- |
-| Pooled | Used by Drizzle ORM with `?pgbouncer=true`    | `postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb?pgbouncer=true` |
-| Direct | Direct (unpooled) for migrations and long-running queries | `postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb` |
+| Type   | Description                                               | Example                                                                       |
+| ------ | --------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Pooled | Used by Drizzle ORM with `?pgbouncer=true`                | `postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb?pgbouncer=true` |
+| Direct | Direct (unpooled) for migrations and long-running queries | `postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb`                |
 
 ```env
 DATABASE_URL=postgresql://[user]:[password]@[host]/[dbname]?pgbouncer=true
@@ -174,12 +174,12 @@ When deploying on Vercel, prefer **OIDC token-based authentication** over long-l
 
 ## Summary: Environment Variables
 
-| Variable                           | Required       | Description                              |
-| ---------------------------------- | -------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes            | Clerk publishable key (public, client-side) |
-| `CLERK_SECRET_KEY`                  | Yes            | Clerk secret key (server-side only)       |
-| `DATABASE_URL`                      | Yes            | Neon pooled connection string             |
-| `DIRECT_URL`                        | Yes            | Neon direct connection string             |
-| `GEMINI_API_KEY`                    | Yes            | Google Gemini API key                     |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`   | Yes            | Google Maps JavaScript API key (client-side) |
-| `BLOB_READ_WRITE_TOKEN`             | Yes            | Vercel Blob read/write token              |
+| Variable                            | Required | Description                                  |
+| ----------------------------------- | -------- | -------------------------------------------- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes      | Clerk publishable key (public, client-side)  |
+| `CLERK_SECRET_KEY`                  | Yes      | Clerk secret key (server-side only)          |
+| `DATABASE_URL`                      | Yes      | Neon pooled connection string                |
+| `DIRECT_URL`                        | Yes      | Neon direct connection string                |
+| `GEMINI_API_KEY`                    | Yes      | Google Gemini API key                        |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`   | Yes      | Google Maps JavaScript API key (client-side) |
+| `BLOB_READ_WRITE_TOKEN`             | Yes      | Vercel Blob read/write token                 |
