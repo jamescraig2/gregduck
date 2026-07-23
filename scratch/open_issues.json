@@ -1,0 +1,492 @@
+[
+  {
+    "body": "# Issue 2.3: Design System & Dark Mode / Glassmorphism UI Theme Tokens\n\n## Objective\nEstablish a centralized, cohesive CSS variable design system and theme token architecture specifying the dark mode aesthetic, glassmorphism components, color palette, typography, elevation, and loading state visuals across the application.\n\n## Specifications & CSS Tokens\n\n### 1. Core Color Palette\n- `--color-bg-base`: `#0B0F17` (Deep space dark background)\n- `--color-bg-surface`: `rgba(18, 24, 38, 0.7)` (Translucent glass panel surface)\n- `--color-bg-card`: `rgba(25, 34, 52, 0.65)` (Elevated glass card surface)\n- `--color-primary`: `#3B82F6` (Electric Blue)\n- `--color-primary-glow`: `rgba(59, 130, 246, 0.35)`\n- `--color-accent-emerald`: `#10B981` (Vibrant Emerald / Discovery highlight)\n- `--color-accent-amber`: `#F59E0B` (Encounter highlight)\n- `--color-text-main`: `#F3F4F6` (High contrast primary text)\n- `--color-text-muted`: `#9CA3AF` (Secondary text)\n- `--color-text-subtle`: `#6B7280` (Muted/disabled text)\n\n### 2. Glassmorphism & Effects\n- `--glass-backdrop-blur`: `blur(16px) saturate(180%)`\n- `--glass-border`: `1px solid rgba(255, 255, 255, 0.12)`\n- `--glass-border-highlight`: `1px solid rgba(255, 255, 255, 0.25)`\n- `--glass-box-shadow`: `0 8px 32px 0 rgba(0, 0, 0, 0.37)`\n- `--glass-inset-glow`: `inset 0 1px 1px 0 rgba(255, 255, 255, 0.1)`\n\n### 3. Typography & Hierarchy\n- `--font-sans`: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif\n- `--font-mono`: 'JetBrains Mono', Fira Code, monospace\n- Font scales: Heading 1 (`2rem`/`1.2`), Heading 2 (`1.5rem`/`1.3`), Body (`1rem`/`1.5`), Caption (`0.875rem`/`1.4`)\n\n### 4. Elevation, Radii & Card Borders\n- `--radius-sm`: `6px`\n- `--radius-md`: `12px`\n- `--radius-lg`: `20px`\n- `--radius-full`: `9999px`\n- Card elevation layers with subtle borders (`--glass-border`) and rounded glass container corners.\n\n### 5. Loading States & Micro-Animations\n- Shimmer keyframes and translucent pulse overlays (`--color-loading-pulse: rgba(255, 255, 255, 0.05)`).\n- Loading spinner animation with primary glow (`--color-primary-glow`).\n\n## Acceptance Criteria\n- [ ] Define global CSS variables in `app/globals.css` (or central theme system).\n- [ ] Provide utility classes or token imports for glassmorphism panels (`.glass-panel`, `.glass-card`).\n- [ ] Verify dark mode visual hierarchy, contrast ratios, and loading keyframe utility classes.\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jgLw",
+        "name": "phase-2",
+        "description": "Phase 2 - Credentials, Accounts, and Environment Preparation",
+        "color": "fef2c0"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXew",
+        "name": "ui",
+        "description": "Frontend user interface components and styling",
+        "color": "0052cc"
+      }
+    ],
+    "number": 24,
+    "title": "Issue 2.3: Design System & Dark Mode / Glassmorphism UI Theme Tokens"
+  },
+  {
+    "body": "# Issue 6.3: Animal Markers Viewport API Endpoint (GET /api/markers)\n\n## Objective\nImplement a RESTful GET API endpoint (`/api/markers`) that serves animal location markers bounded by the client map's viewport coordinates or H3 spatial index cell bounds.\n\n## Requirements & Specifications\n\n### Query Parameters\nThe endpoint must support filtering by geographic bounds:\n- **Bounding Box Parameters**:\n  - `sw_lat`: South-West Latitude (float, e.g. `-90.0` to `90.0`)\n  - `sw_lng`: South-West Longitude (float, e.g. `-180.0` to `180.0`)\n  - `ne_lat`: North-East Latitude (float, e.g. `-90.0` to `90.0`)\n  - `ne_lng`: North-East Longitude (float, e.g. `-180.0` to `180.0`)\n- **H3 Cell Parameters (Optional alternative)**:\n  - `h3_indexes`: Comma-separated list of H3 cell index strings representing the visible area.\n\n### Database Query\n- Query the `animals` table using Drizzle ORM.\n- Filter records where animal latitude (`lat`) and longitude (`lng`) fall within `[sw_lat, ne_lat]` and `[sw_lng, ne_lng]` (handling antimeridian wrapping if applicable).\n- Include metadata such as animal ID, name, species, last encounter timestamp, preview image URL, and location coordinates.\n\n### Response Format\n- HTTP Status `200 OK`\n- JSON structure:\n```json\n{\n  \"markers\": [\n    {\n      \"id\": \"string\",\n      \"name\": \"string\",\n      \"species\": \"string\",\n      \"lat\": 0.0,\n      \"lng\": 0.0,\n      \"h3Index\": \"string\",\n      \"lastEncounteredAt\": \"ISO-8601 timestamp\",\n      \"imageUrl\": \"string\"\n    }\n  ],\n  \"total\": 0\n}\n```\n\n### Error Handling\n- Return `400 Bad Request` if coordinates are invalid, out of bounds, or missing required parameters.\n- Return `500 Internal Server Error` on database connection or execution failures.\n\n## Tasks\n- [ ] Define Zod schema for query parameter validation (`sw_lat`, `sw_lng`, `ne_lat`, `ne_lng`, `h3_indexes`).\n- [ ] Implement Drizzle ORM query logic to select animals within bounding box / H3 indexes.\n- [ ] Build Next.js API route handler for `GET /api/markers`.\n- [ ] Add unit tests and integration tests validating coordinate filtering and response formatting.\n\n## Dependencies & Blockers\n- **Issue 6**: DB Schema (Drizzle ORM `animals` table setup).\n- **Issue 12**: H3 Spatial Indexing (Spatial indexing utilities and H3 coordinate mappings).\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVlQ",
+        "name": "phase-6",
+        "description": "Phase 6 - Front-end v0 Experience (Map & Camera)",
+        "color": "e69715"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXRg",
+        "name": "api",
+        "description": "Backend endpoints and API routing",
+        "color": "006b75"
+      }
+    ],
+    "number": 23,
+    "title": "Issue 6.3: Animal Markers Viewport API Endpoint (GET /api/markers)"
+  },
+  {
+    "body": "# Issue 7.4: Animal Detail & Sighting Timeline API Endpoint (GET /api/animals/[id])\n\n## Objective\nImplement a RESTful API route handler (`GET /api/animals/[id]`) to retrieve detailed metadata for a specific animal along with a chronologically ordered list of all visitor sightings/encounters.\n\n## API Specification\n\n### Request\n- **Method:** `GET`\n- **Path:** `/api/animals/[id]`\n- **Headers:** `Authorization: Bearer <clerk_token>` (if authenticated)\n\n### Response Payload (`200 OK`)\n```json\n{\n  \"id\": \"anim_12345\",\n  \"name\": \"Barnaby the Blue Heron\",\n  \"species\": \"Great Blue Heron\",\n  \"backstory\": \"First spotted near the edge of the lake...\",\n  \"discoveredAt\": \"2026-07-01T10:00:00Z\",\n  \"discoverer\": {\n    \"userId\": \"user_abc\",\n    \"name\": \"Jane Doe\",\n    \"avatarUrl\": \"https://img.clerk.com/...\"\n  },\n  \"encounters\": [\n    {\n      \"id\": \"enc_001\",\n      \"createdAt\": \"2026-07-01T10:00:00Z\",\n      \"photoUrl\": \"https://storage.googleapis.com/...\",\n      \"notes\": \"Initial discovery near the pier.\",\n      \"user\": {\n        \"userId\": \"user_abc\",\n        \"name\": \"Jane Doe\",\n        \"avatarUrl\": \"https://img.clerk.com/...\"\n      }\n    },\n    {\n      \"id\": \"enc_002\",\n      \"createdAt\": \"2026-07-05T14:30:00Z\",\n      \"photoUrl\": \"https://storage.googleapis.com/...\",\n      \"notes\": \"Spotted flying low near the reeds.\",\n      \"user\": {\n        \"userId\": \"user_xyz\",\n        \"name\": \"John Smith\",\n        \"avatarUrl\": \"https://img.clerk.com/...\"\n      }\n    }\n  ]\n}\n```\n\n### Error Responses\n- `404 Not Found`: `{ \"error\": \"Animal not found\" }`\n- `500 Internal Server Error`: `{ \"error\": \"Failed to fetch animal details\" }`\n\n## Requirements\n1. Query database for animal entity metadata (name, species, AI backstory, initial discoverer user ID).\n2. Query associated `encounters` table for all encounters linked to `animal_id`, ordered by `createdAt` timestamp.\n3. Resolve user profile information (display name, avatar URL) for discoverer and encounterers using Clerk User Cache (#7).\n4. Return structured JSON payload.\n\n## Acceptance Criteria\n- [ ] Route handler correctly handles valid animal ID and returns complete metadata and encounter timeline.\n- [ ] Returns 404 for invalid/non-existent animal ID.\n- [ ] Includes enriched user profiles (name, avatar) for all encounter entries.",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbV1w",
+        "name": "phase-7",
+        "description": "Phase 7 - Discovery Journal & Pokédex UI",
+        "color": "d93f0b"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXRg",
+        "name": "api",
+        "description": "Backend endpoints and API routing",
+        "color": "006b75"
+      }
+    ],
+    "number": 22,
+    "title": "Issue 7.4: Animal Detail & Sighting Timeline API Endpoint (GET /api/animals/[id])"
+  },
+  {
+    "body": "# Issue 7.3: User Discoveries & Encounters API Endpoint (GET /api/journal)\n\n## Objective\nImplement the backend REST API endpoint (`GET /api/journal`) to fetch authenticated user discoveries and encounter records from the database.\n\n## Technical Specifications\n- **Authentication**: Perform user authentication using Clerk SDK (`auth()`) to retrieve `userId`. Return `401 Unauthorized` if unauthenticated.\n- **Database Access & ORM**:\n  - Query using Drizzle ORM joining `encounters` and `animals` tables filtered by `encounters.userId`.\n  - Distinguish first-time discoveries (`isFirstDiscovery` flag or earliest encounter per animal) from overall encounter history.\n- **Query Parameters**:\n  - `tab`: `discoveries` (returns first-time unique animal discoveries) vs `all` (returns all logged encounters, default: `discoveries`).\n  - `species`: Filter by species name / category string.\n  - `startDate` / `endDate`: Filter encounters by ISO date ranges.\n  - `page` / `limit`: Pagination parameters (default `page=1`, `limit=20`).\n  - `search`: Case-insensitive text search on animal name or species.\n- **Response Format**:\n  - JSON payload containing:\n    ```json\n    {\n      \"data\": [\n        {\n          \"encounterId\": \"string\",\n          \"animalId\": \"string\",\n          \"name\": \"string\",\n          \"species\": \"string\",\n          \"discoveredAt\": \"string (ISO date)\",\n          \"photoUrl\": \"string | null\",\n          \"isFirstDiscovery\": true\n        }\n      ],\n      \"pagination\": {\n        \"page\": 1,\n        \"limit\": 20,\n        \"total\": 42,\n        \"totalPages\": 3\n      }\n    }\n    ```\n\n## Tasks\n- [ ] Create API route handler at `app/api/journal/route.ts`.\n- [ ] Integrate Clerk `auth()` middleware verification.\n- [ ] Build Drizzle ORM relational query joining `encounters` and `animals` tables.\n- [ ] Support filtering (`species`, `search`, `startDate`, `endDate`, `tab`) and pagination.\n- [ ] Unit & Integration testing for authenticated/unauthenticated API calls.\n\n## Acceptance Criteria\n- [ ] Unauthenticated requests receive HTTP `401 Unauthorized`.\n- [ ] `GET /api/journal?tab=discoveries` accurately returns unique first-time discovered species per user.\n- [ ] `GET /api/journal?tab=all` returns full chronological encounter list.\n- [ ] Filtering and pagination parameters function accurately with clean metadata response.\n\n## Dependencies\n- Issue #6: Database Schema Definitions (`encounters` and `animals` tables)\n- Issue #7: Clerk User Cache & Authentication Integration",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbV1w",
+        "name": "phase-7",
+        "description": "Phase 7 - Discovery Journal & Pokédex UI",
+        "color": "d93f0b"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXRg",
+        "name": "api",
+        "description": "Backend endpoints and API routing",
+        "color": "006b75"
+      }
+    ],
+    "number": 21,
+    "title": "Issue 7.3: User Discoveries & Encounters API Endpoint (GET /api/journal)"
+  },
+  {
+    "body": "# Issue 7.2: Animal Profile & Sighting Timeline\n\n## Objective\nProvide a rich, interactive full-screen drawer/modal detailing an individual animal's life story, AI backstory, initial discoverer badge, and subsequent visitor sighting timeline.\n\n## UI & UX Specifications\n\n### View Shell & Layout\n- **Container**: Full-screen slide-over drawer on desktop, bottom-sheet / modal on mobile with smooth backdrop blur transitions.\n- **Close & Navigation**: Accessible close button (`X`) and ESC key binding to dismiss the modal, returning focus to the map or journal view.\n\n### Header Section\n- **Hero Image**: Large high-resolution photo of the animal (first encounter photo), with fallback blur-up loading state.\n- **Title & Species Badge**: Animal name (e.g., \"Barnaby the Blue Heron\") rendered with prominent typography, alongside a styled canonical species tag.\n- **Discoverer Badge**: Highlighted badge showing the initial discoverer's profile avatar, display name, and initial discovery timestamp.\n- **AI Backstory**: Styled narrative text card displaying the generated AI backstory with subtle background highlight and quotation formatting.\n\n### Sighting Timeline Section\n- **Timeline Structure**: Chronologically ordered vertical timeline of all visitor encounters.\n- **Timeline Item Elements**:\n  - Visitor avatar image & cached Clerk username.\n  - Encounter date & time formatted in relative/localized timestamp (e.g. \"3 days ago • July 20, 2026 2:15 PM\").\n  - Uploaded photo card from that specific encounter with lightboxed image view on click.\n  - Optional encounter notes/comments submitted by the visitor.\n\n## Data Fetching & Integration\n- **Client-Side Data Fetching**: Fetch animal details and timeline by making a `GET /api/animals/[id]` request (Issue #22) when opening the modal for a specific `animalId`.\n- **Loading & Error States**:\n  - Show skeleton loading UI while fetching modal details.\n  - Render a friendly error card with retry button if fetching fails or if `animalId` is invalid.\n\n## Dependencies & Blockers\n- **Issue #6**: Database Schema & Connection Pool Setup (Neon + Drizzle)\n- **Issue #7**: Clerk Authentication & User Cache Synchronization\n- **Issue #18**: Google Maps Interface with Marker Clustering\n- **Issue #19**: Discovery Journal (List View)\n- **Issue #22**: Animal Detail & Sighting Timeline API Endpoint (`GET /api/animals/[id]`)\n- **Design System Specifications**: Finalized UI component specifications and theme token definitions for premium modal & timeline styling.\n\n## Tasks\n- [ ] Build responsive full-screen slide-over drawer / bottom-sheet modal component.\n- [ ] Implement header section displaying hero image, animal name, species badge, discoverer profile, and AI backstory.\n- [ ] Implement vertical timeline component displaying visitor encounters with avatars, timestamps, and photos.\n- [ ] Integrate client-side data fetching calling `GET /api/animals/[id]`.\n- [ ] Implement skeleton loading state and error handling UI.\n- [ ] Connect trigger events from Google Maps markers (#18) and Discovery Journal list items (#19).\n\n## Acceptance Criteria\n- [ ] Modal opens when an animal marker or journal card is clicked, fetching data from `GET /api/animals/[id]`.\n- [ ] Header displays hero image, species badge, AI backstory, and initial discoverer badge accurately.\n- [ ] Sighting timeline renders historical encounters in chronological order with visitor avatars, formatted timestamps, and encounter photos.\n- [ ] UI handles loading skeletons and fetch failure gracefully.",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kIow",
+        "name": "help",
+        "description": "Help needed",
+        "color": "008672"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbV1w",
+        "name": "phase-7",
+        "description": "Phase 7 - Discovery Journal & Pokédex UI",
+        "color": "d93f0b"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXew",
+        "name": "ui",
+        "description": "Frontend user interface components and styling",
+        "color": "0052cc"
+      }
+    ],
+    "number": 20,
+    "title": "Issue 7.2: Animal Profile & Sighting Timeline"
+  },
+  {
+    "body": "# Issue 7.1: Discovery Journal (List View)\n\n## Objective\nPresent users with a responsive, styled catalog of all unique animals they have discovered or encountered, featuring filtering, search, and tabbed navigation.\n\n## UI Specifications\n- **Tabbed Navigation**:\n  - \"My Discoveries\": Displays unique species discovered for the first time by the authenticated user (`tab=discoveries`).\n  - \"All Encountered Animals\": Chronological grid of all animal encounters logged by the user (`tab=all`).\n- **Grid & Card Layout**:\n  - Responsive multi-column layout (1 column mobile, 2-3 columns tablet, 4 columns desktop).\n  - Animal Card components displaying:\n    - Animal Name (heading)\n    - Canonical Species Badge (styled status tag)\n    - Discovery/Encounter Date (formatted relative/localized timestamp)\n    - Photo preview thumbnail (with lazy loading & placeholder fallback)\n    - \"First Discovery\" badge indicator (when applicable)\n- **Search & Filter Controls**:\n  - Species search input (real-time query parameter filtering).\n  - Date range filter selector (Filter encounters by date range).\n  - Sort selector (Newest First, Oldest First, Alphabetical).\n\n## Data Fetching & Integration\n- Fetch data client-side or server-side from `GET /api/journal` (Issue #21).\n- Support pagination / infinite scroll using response pagination metadata (`page`, `limit`, `total`, `totalPages`).\n- Handle loading states (skeleton grid cards), empty states (\"No discoveries logged yet\"), and error states with retry actions.\n\n## Dependencies & Blockers\n- **Issue #6**: Database Schema & Connection Pool Setup (Neon + Drizzle)\n- **Issue #7**: Clerk Authentication & User Cache Synchronization\n- **Issue #21**: User Discoveries & Encounters API Endpoint (`GET /api/journal`)\n- **Design System Specifications**: Finalized UI component specifications and theme token definitions for premium styling.\n\n## Tasks\n- [ ] Implement tabbed layout container for \"My Discoveries\" vs \"All Encountered Animals\".\n- [ ] Build search bar, species filter, and date picker controls.\n- [ ] Create reusable `AnimalCard` component adhering to Design System UI tokens.\n- [ ] Integrate data fetching layer connecting to `GET /api/journal`.\n- [ ] Implement loading skeleton, empty state UI, and error handling states.\n- [ ] Implement pagination / infinite scrolling.\n\n## Acceptance Criteria\n- [ ] Switching tabs triggers accurate API request (`tab=discoveries` vs `tab=all`) and updates list UI.\n- [ ] Filter and search controls filter the rendered animal grid dynamically.\n- [ ] Cards display animal name, species badge, discovery date, photo preview, and discovery tags accurately.\n- [ ] Page handles loading skeleton and empty states cleanly.",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kIow",
+        "name": "help",
+        "description": "Help needed",
+        "color": "008672"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbV1w",
+        "name": "phase-7",
+        "description": "Phase 7 - Discovery Journal & Pokédex UI",
+        "color": "d93f0b"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXew",
+        "name": "ui",
+        "description": "Frontend user interface components and styling",
+        "color": "0052cc"
+      }
+    ],
+    "number": 19,
+    "title": "Issue 7.1: Discovery Journal (List View)"
+  },
+  {
+    "body": "# Issue 6.2: Google Maps Interface with Marker Clustering\n\n## Objective\nImplement an interactive Google Maps interface utilizing `@vis.gl/react-google-maps` to display user position, active H3 grid boundaries, and clustered animal markers fetched dynamically based on map viewport changes.\n\n## Technical Specifications & Implementation Details\n\n### 1. Map Component Setup (`@vis.gl/react-google-maps`)\n- Use `<APIProvider>` with Google Maps API Key loaded from environment variables (`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`).\n- Render `<Map>` component with standard dark/custom Map ID styling and user position marker using browser geolocation API.\n- Support default center and zoom levels with smooth panning controls.\n\n### 2. Viewport Boundary Change Detection & Automated Refetching\n- Attach event listeners `onCameraChanged` / `onBoundsChanged` to detect user panning, zooming, or map movement.\n- Extract map viewport bounding box coordinates (`sw_lat`, `sw_lng`, `ne_lat`, `ne_lng`) from map bounds instance (`map.getBounds()`).\n- Debounce camera change events (e.g., 300ms) to prevent thrashing API calls.\n- Fetch visible animal markers asynchronously from `GET /api/markers?sw_lat=...&sw_lng=...&ne_lat=...&ne_lng=...`.\n\n### 3. Marker Clustering & Interactivity\n- Integrate `@googlemaps/markerclusterer` or `@vis.gl/react-google-maps` clustering library for grouping high-density markers.\n- Render custom marker pins with species-specific icon badges or animal avatars.\n- Attach an `onClick` event handler to markers and cluster pins:\n  - Clicking an individual animal marker opens a bottom drawer / teaser modal displaying animal name, species, thumbnail, distance, and last encounter timestamp.\n  - Teaser card includes a link/button to navigate to the full animal detail profile (`/animals/[id]`).\n\n## Tasks\n- [ ] Install `@vis.gl/react-google-maps` and `@googlemaps/markerclusterer`.\n- [ ] Build base Google Map dashboard component with geolocation tracking.\n- [ ] Implement debounced viewport change handlers (`onCameraChanged` / `onBoundsChanged`).\n- [ ] Connect map component to `GET /api/markers` for real-time marker refetching on viewport updates.\n- [ ] Implement Marker Clustering for dense areas.\n- [ ] Create Animal Teaser Card/Modal component triggered on marker click.\n- [ ] Add unit and UI component tests for map state and modal interactions.\n\n## Acceptance Criteria\n- [ ] Map renders properly with customized Google Maps styling and API provider initialization.\n- [ ] Viewport shifts trigger debounced fetch requests to `GET /api/markers` with updated bounding box query parameters.\n- [ ] Animal markers render on map and cluster appropriately when zoomed out.\n- [ ] Clicking a marker displays the Animal Teaser Modal with correct animal details and navigation links.\n\n## Dependencies & Blockers\n- **Issue #6**: Database Schema & Connection Pool Setup (Neon + Drizzle) - Required for animal persistence.\n- **Issue #12**: Spatial Indexing Service (h3-js) - Required for spatial grid index mapping.\n- **Issue #23**: Animal Markers Viewport API Endpoint (`GET /api/markers`) - Backend precursor API to supply viewport-bounded marker data.\n- **Design System / Component Library**: UI design tokens and base modal/drawer components for animal teaser card.\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kIow",
+        "name": "help",
+        "description": "Help needed",
+        "color": "008672"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVlQ",
+        "name": "phase-6",
+        "description": "Phase 6 - Front-end v0 Experience (Map & Camera)",
+        "color": "e69715"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXew",
+        "name": "ui",
+        "description": "Frontend user interface components and styling",
+        "color": "0052cc"
+      }
+    ],
+    "number": 18,
+    "title": "Issue 6.2: Google Maps Interface with Marker Clustering"
+  },
+  {
+    "body": "# Issue 6.1: Web Camera & Capture UI Component\n\n## Objective\nBuild a responsive, modern web camera viewfinder and photo capture component adhering to the application's glassmorphism dark design system. The component handles media stream initialization, fallback photo uploads, client-side geolocation gathering, sending requests to the core capture coordinator API (`/api/capture`), and rendering interactive response cards for discoveries/encounters.\n\n## Design & UI Specifications\n- **Theme Tokens**: Component styling must consume CSS design tokens defined in Issue #24 ([Issue 2.3: Design System & Dark Mode / Glassmorphism UI Theme Tokens](https://github.com/jamescraig2/gregduck/issues/24)).\n- **Layout & Visuals**:\n  - Full-width dark media container (`--color-bg-base`) with glassmorphism control overlays (`.glass-panel`, `--glass-backdrop-blur`).\n  - Sleek floating shutter button with hover/active state animations (`--color-primary`, `--color-primary-glow`).\n  - Live preview video stream container with rounded glass corners (`--radius-lg`) and crisp border (`--glass-border`).\n\n## Component Architecture & Capture Workflow\n\n### 1. Camera Feed & Fallback Management\n- Primary method: Initialize video stream via `navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: 'environment' } } })` (falling back to `{ video: true }`).\n- Fallback method: If camera access is denied, unsupported, or insecure HTTP context, render standard `<input type=\"file\" accept=\"image/*\" capture=\"environment\">` inside a custom styled glassmorphism button.\n- Canvas capture: Render video frame onto an offscreen `<canvas>` context to generate a compressed Blob/Base64 image payload.\n\n### 2. Geolocation Acquisition & Request Payload\n- Trigger `navigator.geolocation.getCurrentPosition` upon shutter click (or utilize pre-fetched position cache with fallback prompt).\n- Construct payload: `FormData` or JSON containing `image` Blob/Base64, `latitude`, `longitude`, and `accuracy`.\n- Execute HTTP `POST` request to `/api/capture` endpoint (defined in Issue #16).\n\n### 3. Loading Overlay & Async State Machine\n- **Idle / Active Viewfinder**: Camera live feed visible, shutter button enabled.\n- **Location / Capture Pending**: Shutter disabled, spinner with subtle glow (`--color-primary-glow`) and text status \"Acquiring location & capturing frame...\".\n- **Gemini Evaluation Pending**: Translucent dark glass overlay (`--color-bg-surface` + `--glass-backdrop-blur`) with animated pulse shimmer (\"Analyzing animal species with Gemini Vision...\").\n- **Error State**: Non-blocking toast notification or alert card detailing failure (e.g., GPS unavailable, Vision API failure, bad image) with retry trigger.\n\n### 4. Result UI Cards\n- **New Discovery Modal (`resultType === 'new_discovery'`)**:\n  - Congratulatory header with emerald highlight (`--color-accent-emerald`).\n  - Displays species name, visual confidence score, rarity badge, and optional fun facts.\n  - Action buttons: \"View in Journal\" and \"Dismiss\".\n- **Existing Animal Encounter Modal (`resultType === 'encounter'`)**:\n  - \"Say Hello Again!\" greeting with amber highlight (`--color-accent-amber`).\n  - Displays animal name/ID, encounter count increment notification, and relative distance update.\n  - Action buttons: \"Log Encounter\" and \"Dismiss\".\n\n## Dependencies & Blockers\n- **Issue #16**: [Issue 5.3: Core Capture Coordinator Endpoint (/api/capture)](https://github.com/jamescraig2/gregduck/issues/16) - Required for server-side image processing, species evaluation, and database insertion.\n- **Issue #24**: [Issue 2.3: Design System & Dark Mode / Glassmorphism UI Theme Tokens](https://github.com/jamescraig2/gregduck/issues/24) - Required for CSS custom properties, glassmorphism styles, and color palette tokens.\n\n## Acceptance Criteria\n- [ ] Viewfinder successfully requests and displays device camera feed with environment/rear camera preference.\n- [ ] Graceful fallback to `<input type=\"file\" capture=\"environment\">` if `getUserMedia` is unsupported or rejected.\n- [ ] Retrieves precise GPS coordinates (`latitude`, `longitude`) upon capturing image.\n- [ ] Sends image payload and GPS coordinates to `POST /api/capture`.\n- [ ] Displays translucent glass loading overlay with status text during API submission.\n- [ ] Renders distinct UI modals/cards for **New Discovery** vs **Existing Encounter** based on API response payload.\n- [ ] Fully styled using design tokens from Issue #24.",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kIow",
+        "name": "help",
+        "description": "Help needed",
+        "color": "008672"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVlQ",
+        "name": "phase-6",
+        "description": "Phase 6 - Front-end v0 Experience (Map & Camera)",
+        "color": "e69715"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXew",
+        "name": "ui",
+        "description": "Frontend user interface components and styling",
+        "color": "0052cc"
+      }
+    ],
+    "number": 17,
+    "title": "Issue 6.1: Web Camera & Capture UI Component"
+  },
+  {
+    "body": "# Issue 5.3: Core Capture Coordinator Endpoint (/api/capture)\n\n## Objective\nChain the photo capture, verification, matching, and database persistence into a single transactional serverless API endpoint.\n\n## Tasks\n- [ ] Create route handler for `POST /api/capture`.\n- [ ] Parse multipart form data containing the image stream and latitude/longitude inputs.\n- [ ] Execute capture pipeline:\n  - Call Gemini API to verify the image. If not an animal, return an error.\n  - Upload the image to Vercel Blob.\n  - Compute the H3 index.\n  - Call the Proximity Matching service.\n  - Execute database transactions:\n    - If New Discovery: Create `animals` record and create matching `encounters` entry.\n    - If Encounter: Create `encounters` record linked to the existing `animals` record.\n- [ ] Return details back to client (isNewDiscovery, animal details, encounter details).\n- [ ] Write integration tests for the full pipeline.\n\n## Acceptance Criteria\n- [ ] `POST /api/capture` endpoint processes upload, matching, and DB persistence.\n- [ ] End-to-end integration tests execute successfully.\n\n## Labels\n- `api`\n- `phase-5`\n- `planned`",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVPg",
+        "name": "phase-5",
+        "description": "Phase 5 - Verification & Capture Pipeline (Gemini & Photo Storage)",
+        "color": "1d76db"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXRg",
+        "name": "api",
+        "description": "Backend endpoints and API routing",
+        "color": "006b75"
+      }
+    ],
+    "number": 16,
+    "title": "Issue 5.3: Core Capture Coordinator Endpoint (/api/capture)"
+  },
+  {
+    "body": "# Issue 5.2: Gemini Vision API Integration\n\n## Objective\nSend captured images to Gemini to verify if they contain an animal, extract the species, and generate creative backstories.\n\n## Tasks\n- [ ] Design structured JSON response schemas for Gemini to enforce consistency:\n  - `isAnimal: boolean`\n  - `species: string` (e.g. \"squirrel\", \"goose\", \"rabbit\", etc.)\n  - `name: string` (e.g. \"Charles\")\n  - `backstory: string`\n- [ ] Implement backend service calling Gemini's multimodal models with standard prompt parameters.\n- [ ] Parse and validate Gemini responses against the schema.\n- [ ] Add unit/integration tests with mocked image buffers and sample outputs.\n\n## Acceptance Criteria\n- [ ] API integration returns structured JSON output from Gemini.\n- [ ] Non-animal images are rejected with `isAnimal: false` cleanly.\n- [ ] Integration tests verify the parsing logic.\n\n## Labels\n- `ai`\n- `phase-5`\n- `planned`",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jgZw",
+        "name": "ai",
+        "description": "Artificial Intelligence / LLM tasks",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kG9g",
+        "name": "planned",
+        "description": "Issue has been planned and is ready for implementation",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVPg",
+        "name": "phase-5",
+        "description": "Phase 5 - Verification & Capture Pipeline (Gemini & Photo Storage)",
+        "color": "1d76db"
+      }
+    ],
+    "number": 15,
+    "title": "Issue 5.2: Gemini Vision API Integration"
+  },
+  {
+    "body": "# Issue 5.1: Vercel Blob Storage Integration\n\n## Objective\nEstablish server-side file uploads for animal photos using Vercel Blob.\n\n## Tasks\n- [ ] Install `@vercel/blob` SDK.\n- [ ] Implement helper service `/services/storage.ts` to handle upload operations.\n- [ ] Ensure naming schemes prevent conflicts (e.g. prefixing filenames with unique UUIDs or timestamps).\n- [ ] Add unit/mock tests to verify storage client initialization and handle missing token scenarios gracefully.\n\n## Acceptance Criteria\n- [ ] Helper service uploads file buffers/streams and returns the secure URL.\n- [ ] Naming conflict prevention is verified.\n\n## Labels\n- `storage`\n- `phase-5`\n- `planned`",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m6WQ",
+        "name": "quick",
+        "description": "Quick task",
+        "color": "c2e0c6"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m60Q",
+        "name": "p2",
+        "description": "P2: Medium priority",
+        "color": "fbca04"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbVPg",
+        "name": "phase-5",
+        "description": "Phase 5 - Verification & Capture Pipeline (Gemini & Photo Storage)",
+        "color": "1d76db"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbXGw",
+        "name": "storage",
+        "description": "Vercel Blob and file storage tasks",
+        "color": "bfd4f2"
+      }
+    ],
+    "number": 14,
+    "title": "Issue 5.1: Vercel Blob Storage Integration"
+  },
+  {
+    "body": "# Issue 4.2: Proximity Matching Engine\n\n## Objective\nBuild the matching engine layer that handles species capacity and proximity detection based on Uber H3 resolution 9 cells.\n\n## Tasks\n- [ ] Create `/services/matching/types.ts` to house the data models: `MatchingResult`, `MatchingParams`, and `AnimalMatchingStrategy`.\n- [ ] Create `/services/matching/config.ts` containing carrying-capacity saturation configs per species (defaulting to 3).\n- [ ] Implement `/services/matching/proximity.ts` (implementing `AnimalMatchingStrategy`):\n  - Query center cell + 6 neighbors for existing animals of the target species.\n  - If under saturation capacity: return `{ isNewDiscovery: true, matchedAnimal: null }`.\n  - If at/above saturation: calculate Euclidean or Haversine distance to find the closest existing discovery and return `{ isNewDiscovery: false, matchedAnimal: closest }`.\n- [ ] Implement `/services/matching/index.ts` as the entry service wrapper.\n- [ ] Add unit tests in `/tests/services/matching.test.ts` covering saturation boundaries, neighborhood checks, and minimum distance calculations.\n\n## Acceptance Criteria\n- [ ] Service returns `isNewDiscovery: true` when count of species in the 7-cell neighborhood is below limit.\n- [ ] Service returns the closest animal when count of species in the 7-cell neighborhood is at or above capacity.\n- [ ] Unit tests verify matching logic boundaries.\n\n## Labels\n- `location`\n- `phase-4`\n- `planned`",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbUyw",
+        "name": "phase-4",
+        "description": "Phase 4 - Core Game Logic (H3 Spatial Grid & Proximity Matcher)",
+        "color": "bfe5bf"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbW-Q",
+        "name": "location",
+        "description": "Geospatial and H3 indexing tasks",
+        "color": "5319e7"
+      }
+    ],
+    "number": 13,
+    "title": "Issue 4.2: Proximity Matching Engine"
+  },
+  {
+    "body": "# Issue 4.1: Spatial Indexing Service (h3-js)\n\n## Objective\nImplement H3 hexagonal location mapping functions to support geospatial partitioning.\n\n## Tasks\n- [ ] Install `h3-js` library.\n- [ ] Create `/services/location/h3.ts` to compute resolution 9 cell index from latitude and longitude coordinates.\n- [ ] Implement a method in `/services/location/h3.ts` to return the 7-cell cluster (current center cell + 6 adjacent neighbors using `gridDisk` or equivalent `h3-js` function) representing a user's local zone.\n- [ ] Write unit tests in `/tests/services/location.test.ts` verifying correct conversions and boundary behavior.\n\n## Acceptance Criteria\n- [ ] Correct resolution 9 indexes are generated from GPS coordinates.\n- [ ] 7-cell local zone clusters are correctly resolved.\n- [ ] Unit tests pass and verify conversion correctness.\n\n## Labels\n- `location`\n- `phase-4`\n- `planned`",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m6WQ",
+        "name": "quick",
+        "description": "Quick task",
+        "color": "c2e0c6"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m60Q",
+        "name": "p2",
+        "description": "P2: Medium priority",
+        "color": "fbca04"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbUyw",
+        "name": "phase-4",
+        "description": "Phase 4 - Core Game Logic (H3 Spatial Grid & Proximity Matcher)",
+        "color": "bfe5bf"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACtAbW-Q",
+        "name": "location",
+        "description": "Geospatial and H3 indexing tasks",
+        "color": "5319e7"
+      }
+    ],
+    "number": 12,
+    "title": "Issue 4.1: Spatial Indexing Service (h3-js)"
+  },
+  {
+    "body": "# Issue 3.2: Clerk Authentication & User Cache Synchronization\n\n## Objective\nIntegrate Clerk auth into the Next.js app and implement the lazy-sync mechanism to save active profiles in Neon.\n\n## Tasks\n- [ ] Install Clerk SDK `@clerk/nextjs`.\n- [ ] Set up Clerk provider in `app/layout.tsx` and configure auth middleware.\n- [ ] Implement a profile-sync helper `/lib/auth/sync.ts`:\n  - Checks if the current authenticated `userId` exists in the Neon `users` table.\n  - If not, fetches user info from Clerk Node SDK (`clerkClient.users.getUser`) and inserts it into the database.\n- [ ] Set up public vs protected routes (e.g. landing page is public, capture/journal is protected).\n\n## Acceptance Criteria\n- [ ] Protected routes redirect unauthenticated users to Clerk signup/login.\n- [ ] Upon first login, user profile is successfully cached/synchronized in the local Neon database.\n\n## Labels\n- `auth`\n- `boilerplate`\n- `phase-3`\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jc0g",
+        "name": "boilerplate",
+        "description": "Boilerplate code and configuration",
+        "color": "5319e7"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jhTQ",
+        "name": "phase-3",
+        "description": "Phase 3 - Data Persistence & Authentication (Core Boilerplate)",
+        "color": "d4c5f9"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jhsg",
+        "name": "auth",
+        "description": "Authentication and authorization tasks",
+        "color": "b60205"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5kGmw",
+        "name": "blocked",
+        "description": "Blocked by an external dependency or decision",
+        "color": "b60205"
+      }
+    ],
+    "number": 7,
+    "title": "Issue 3.2: Clerk Authentication & User Cache Synchronization"
+  },
+  {
+    "body": "# Issue 3.1: Database Schema & Connection Pool Setup (Neon + Drizzle)\n\n## Objective\nCreate the core tables and wire up Drizzle ORM to work with Neon serverless connections.\n\n## Tasks\n- [ ] Install `drizzle-orm`, `drizzle-kit`, and `@neondatabase/serverless`.\n- [ ] Create the schema in `/lib/db/schema.ts` defining:\n  - `users`: Clerk cached profiles (ID, username, avatar_url, created_at)\n  - `animals`: Unique discoveries (ID, name, species, backstory, photo_url, discoverer_id, h3_index [len 32], latitude, longitude, created_at)\n  - `encounters`: User sightings (ID, user_id, animal_id, photo_url, created_at)\n- [ ] Set up connection pool and client in `/lib/db/index.ts` utilizing serverless web sockets.\n- [ ] Configure `drizzle.config.ts` and set up migration scripts in `package.json`:\n  - `db:generate` (generate SQL migrations)\n  - `db:migrate` (apply migrations to database)\n  - `db:studio` (launch Drizzle DBM UI)\n\n## Acceptance Criteria\n- [ ] Migration files generated successfully.\n- [ ] Database connection works and can apply migrations to local/Neon database.\n\n## Labels\n- `database`\n- `boilerplate`\n- `phase-3`\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jc0g",
+        "name": "boilerplate",
+        "description": "Boilerplate code and configuration",
+        "color": "5319e7"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jhDQ",
+        "name": "database",
+        "description": "Database schema, migrations, connection setup",
+        "color": "e99695"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jhTQ",
+        "name": "phase-3",
+        "description": "Phase 3 - Data Persistence & Authentication (Core Boilerplate)",
+        "color": "d4c5f9"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m6mA",
+        "name": "p1",
+        "description": "P1: High priority",
+        "color": "d93f0b"
+      }
+    ],
+    "number": 6,
+    "title": "Issue 3.1: Database Schema & Connection Pool Setup (Neon + Drizzle)"
+  },
+  {
+    "body": "# Issue 2.2: API Clients & Mock Wrappers Boilerplate\n\n## Objective\nInstall standard SDKs and build clean API client wrappers that fall back gracefully or log errors if environment keys are missing.\n\n## Tasks\n- [ ] Install `@google/generative-ai` SDK.\n- [ ] Create `/services/gemini/client.ts` with structured initialization and a robust safety wrapper for calling Gemini.\n- [ ] Create standard mock payloads in `/services/gemini/mocks.ts` simulating:\n  - Successful animal identification (e.g., standard \"squirrel\", \"duck\" JSON payloads)\n  - Rejected identification (\"not an animal\" responses)\n  - Network failure stubs for tests and local development without consuming quota.\n\n## Acceptance Criteria\n- [ ] SDK initialization handles missing API keys gracefully (logs warning in dev/test, doesn't crash).\n- [ ] Mock responses are accessible and correctly structured per the PRD JSON model.\n\n## Labels\n- `boilerplate`\n- `ai`\n- `phase-2`\n",
+    "labels": [
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jc0g",
+        "name": "boilerplate",
+        "description": "Boilerplate code and configuration",
+        "color": "5319e7"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jgLw",
+        "name": "phase-2",
+        "description": "Phase 2 - Credentials, Accounts, and Environment Preparation",
+        "color": "fef2c0"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5jgZw",
+        "name": "ai",
+        "description": "Artificial Intelligence / LLM tasks",
+        "color": "bfd4f2"
+      },
+      {
+        "id": "LA_kwDOTgurN88AAAACs5m6gg",
+        "name": "p0",
+        "description": "P0: Critical priority",
+        "color": "b60205"
+      }
+    ],
+    "number": 5,
+    "title": "Issue 2.2: API Clients & Mock Wrappers Boilerplate"
+  }
+]
