@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 
 const root = path.resolve(__dirname, '..');
 
@@ -16,8 +15,8 @@ describe('Project Structure', () => {
   it('shouldHaveCoreFiles', () => {
     const files = ['package.json', 'tsconfig.json', '.gitignore'];
     // next.config.* or eslint.config.*
-    const nextFiles = fs.readdirSync(root).filter(f => f.startsWith('next.config'));
-    const eslintFiles = fs.readdirSync(root).filter(f => f.startsWith('eslint.config'));
+    const nextFiles = fs.readdirSync(root).filter((f) => f.startsWith('next.config'));
+    const eslintFiles = fs.readdirSync(root).filter((f) => f.startsWith('eslint.config'));
     expect(nextFiles.length).toBeGreaterThan(0);
     expect(eslintFiles.length).toBeGreaterThan(0);
     for (const file of files) {
@@ -39,7 +38,7 @@ describe('Project Structure', () => {
 
   it('shouldNotHaveTailwindConfig', () => {
     const files = fs.readdirSync(root);
-    const tailwindFiles = files.filter(f => f.includes('tailwind') || f.includes('postcss'));
+    const tailwindFiles = files.filter((f) => f.includes('tailwind') || f.includes('postcss'));
     expect(tailwindFiles.length).toBe(0);
   });
 
