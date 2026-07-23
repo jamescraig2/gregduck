@@ -13,13 +13,19 @@
     "test:smoke": "node tests/smoke.mjs",
     "test:watch": "vitest --config tests/vitest.config.ts",
     "test:coverage": "vitest run --coverage --config tests/vitest.config.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@neondatabase/serverless": "^0.10.4",
+    "drizzle-orm": "^0.38.4",
     "next": "16.2.11",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.0",
@@ -27,8 +33,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.5.14",
     "@vitejs/plugin-react": "^6.0.4",
     "@vitest/coverage-v8": "^4.1.10",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "eslint-config-prettier": "^10.1.8",
