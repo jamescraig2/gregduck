@@ -11,6 +11,8 @@
     "format:check": "prettier --check .",
     "test": "vitest run --config tests/vitest.config.ts",
     "test:smoke": "node tests/smoke.mjs",
+    "test:watch": "vitest --config tests/vitest.config.ts",
+    "test:coverage": "vitest run --coverage --config tests/vitest.config.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -25,12 +27,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.4",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.11",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-unused-imports": "^4.4.1",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "msw": "^2.15.0",
     "lint-staged": "^17.2.0",
     "prettier": "^3.9.6",
     "typescript": "^5",
