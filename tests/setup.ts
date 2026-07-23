@@ -79,13 +79,15 @@ vi.mock('@vercel/blob', () => ({
 
 // Mock Google Generative AI
 vi.mock('@google/generative-ai', () => ({
-  GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
-    getGenerativeModel: vi.fn().mockReturnValue({
-      generateContent: vi.fn().mockResolvedValue({
-        response: {
-          text: () => 'Mocked Gemini AI analysis result for species identification.',
-        },
+  GoogleGenerativeAI: vi.fn().mockImplementation(function () {
+    return {
+      getGenerativeModel: vi.fn().mockReturnValue({
+        generateContent: vi.fn().mockResolvedValue({
+          response: {
+            text: () => 'Mocked Gemini AI analysis result for species identification.',
+          },
+        }),
       }),
-    }),
-  })),
+    };
+  }),
 }));
