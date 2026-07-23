@@ -63,13 +63,6 @@ export async function uploadFile(
 export async function validateImageContent(
   file: Buffer | Blob | ReadableStream | string | ArrayBuffer,
 ): Promise<boolean> {
-  if (typeof Blob !== 'undefined' && file instanceof Blob) {
-    const validMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (file.type && validMimes.includes(file.type)) {
-      return true;
-    }
-  }
-
   let buffer: ArrayBuffer | Buffer | null = null;
 
   if (typeof Buffer !== 'undefined' && Buffer.isBuffer(file)) {
