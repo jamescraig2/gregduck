@@ -6,7 +6,7 @@ describe('Home Page', () => {
   it('rendersMainHeading', () => {
     render(<Home />);
     const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toHaveTextContent('Gray Duck');
+    expect(heading).toHaveTextContent('Greg Duck');
   });
 
   it('rendersTagline', () => {
