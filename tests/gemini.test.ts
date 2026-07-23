@@ -83,6 +83,45 @@ describe('Gemini Client & Mocks Suite', () => {
       expect(mockGenerateContent).toHaveBeenCalled();
       expect(result).toEqual(mockSquirrelResponse);
     });
+
+    it('strips markdown code fences from response text before parsing JSON', async () => {
+      const mockGenerateContent = vi.fn().mockResolvedValue({
+        response: {
+          text: () => `\`\`\`json\n${JSON.stringify(mockDuckResponse)}\n\`\`\``,
+        },
+      });
+
+      const mockGetGenerativeModel = vi.fn().mockReturnValue({
+        generateContent: mockGenerateContent,
+      });
+
+      const mockClient = {
+        getGenerativeModel: mockGetGenerativeModel,
+      } as unknown as GoogleGenerativeAI;
+
+      const result = await analyzeAnimalImage(mockClient, 'abc123xyz');
+      expect(result).toEqual(mockDuckResponse);
+    });
+
+    it('throws a descriptive error when JSON.parse fails on invalid response', async () => {
+      const mockGenerateContent = vi.fn().mockResolvedValue({
+        response: {
+          text: () => 'Invalid raw string response non-json',
+        },
+      });
+
+      const mockGetGenerativeModel = vi.fn().mockReturnValue({
+        generateContent: mockGenerateContent,
+      });
+
+      const mockClient = {
+        getGenerativeModel: mockGetGenerativeModel,
+      } as unknown as GoogleGenerativeAI;
+
+      await expect(analyzeAnimalImage(mockClient, 'abc123xyz')).rejects.toThrow(
+        /Failed to parse Gemini response as JSON/,
+      );
+    });
   });
 
   describe('Mock Structure Verification', () => {

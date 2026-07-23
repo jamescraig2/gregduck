@@ -60,6 +60,21 @@ export async function analyzeAnimalImage(
 
   const result = await model.generateContent([prompt, imagePart]);
   const responseText = result.response.text();
-  const parsed = JSON.parse(responseText) as GeminiAnimalAnalysisResponse;
-  return parsed;
+
+  let sanitizedText = responseText.trim();
+  if (sanitizedText.startsWith('```')) {
+    sanitizedText = sanitizedText
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/, '')
+      .trim();
+  }
+
+  try {
+    const parsed = JSON.parse(sanitizedText) as GeminiAnimalAnalysisResponse;
+    return parsed;
+  } catch (error) {
+    throw new Error(
+      `Failed to parse Gemini response as JSON: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 }

@@ -84,7 +84,14 @@ vi.mock('@google/generative-ai', () => ({
       getGenerativeModel: vi.fn().mockReturnValue({
         generateContent: vi.fn().mockResolvedValue({
           response: {
-            text: () => 'Mocked Gemini AI analysis result for species identification.',
+            text: () =>
+              JSON.stringify({
+                isAnimal: true,
+                species: 'Eastern Gray Squirrel',
+                name: 'Nutty',
+                backstory: 'Loves hoarding acorns in campus parks.',
+                confidence: 0.95,
+              }),
           },
         }),
       }),
