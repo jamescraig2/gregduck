@@ -12,11 +12,12 @@ export function generateUniqueFilename(
   prefix: string = 'photos',
 ): string {
   const sanitized = originalFilename.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const sanitizedPrefix = prefix.replace(/[^a-zA-Z0-9._-]/g, '');
   const timestamp = Date.now();
   const uuid = crypto.randomUUID();
   const baseName = `${timestamp}-${uuid}-${sanitized}`;
 
-  return prefix ? `${prefix}/${baseName}` : baseName;
+  return sanitizedPrefix ? `${sanitizedPrefix}/${baseName}` : baseName;
 }
 
 /**
@@ -71,6 +72,11 @@ export async function uploadAnimalPhoto(
   originalFilename: string,
   options?: PutCommandOptions,
 ): Promise<PutBlobResult> {
+  const validExtensions = /\.(jpg|jpeg|png|webp|gif)$/i;
+  if (!validExtensions.test(originalFilename)) {
+    throw new Error('Invalid file type. Only jpg, jpeg, png, webp, and gif are allowed.');
+  }
+
   const uniquePathname = generateUniqueFilename(originalFilename, 'animal-photos');
   return await uploadFile(uniquePathname, file, options);
 }

@@ -152,5 +152,11 @@ describe('Vercel Blob Storage Integration Service', () => {
       );
       expect(res.url).toBe('https://blob.vercel-storage.com/animal-photos/unique-duck.jpg');
     });
+
+    it('should throw an error if the file extension is not an image', async () => {
+      const buffer = Buffer.from('fake-text-data');
+      await expect(uploadAnimalPhoto(buffer, 'document.pdf')).rejects.toThrow(/Invalid file type/);
+      expect(put).not.toHaveBeenCalled();
+    });
   });
 });
