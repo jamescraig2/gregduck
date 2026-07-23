@@ -6,6 +6,8 @@
   min-height: 100vh;
   padding: 2rem;
   text-align: center;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-main);
 }
 
 .title {
@@ -16,5 +18,5 @@
 
 .tagline {
   font-size: 1.25rem;
-  color: #666;
+  color: var(--color-text-muted);
 }
