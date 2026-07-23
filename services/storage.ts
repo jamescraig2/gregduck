@@ -1,4 +1,5 @@
 import { put, PutBlobResult, PutCommandOptions } from '@vercel/blob';
+import { randomUUID } from 'crypto';
 
 /**
  * Generates a unique, collision-resistant filename by prefixing with a timestamp and UUID.
@@ -14,7 +15,7 @@ export function generateUniqueFilename(
   const sanitized = originalFilename.replace(/[^a-zA-Z0-9._-]/g, '_');
   const sanitizedPrefix = prefix.replace(/[^a-zA-Z0-9._-]/g, '');
   const timestamp = Date.now();
-  const uuid = crypto.randomUUID();
+  const uuid = randomUUID();
   const baseName = `${timestamp}-${uuid}-${sanitized}`;
 
   return sanitizedPrefix ? `${sanitizedPrefix}/${baseName}` : baseName;
@@ -59,6 +60,79 @@ export async function uploadFile(
   });
 }
 
+export async function validateImageContent(
+  file: Buffer | Blob | ReadableStream | string | ArrayBuffer,
+): Promise<boolean> {
+  if (typeof Blob !== 'undefined' && file instanceof Blob) {
+    const validMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (file.type && validMimes.includes(file.type)) {
+      return true;
+    }
+  }
+
+  let buffer: ArrayBuffer | Buffer | null = null;
+
+  if (typeof Buffer !== 'undefined' && Buffer.isBuffer(file)) {
+    buffer = file;
+  } else if (file instanceof ArrayBuffer) {
+    buffer = file;
+  } else if (typeof Blob !== 'undefined' && file instanceof Blob) {
+    buffer = await file.arrayBuffer();
+  }
+
+  if (buffer) {
+    const bytes = new Uint8Array(buffer.slice(0, 12));
+    if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff)
+      return true; // JPEG
+    if (
+      bytes.length >= 4 &&
+      bytes[0] === 0x89 &&
+      bytes[1] === 0x50 &&
+      bytes[2] === 0x4e &&
+      bytes[3] === 0x47
+    )
+      return true; // PNG
+    if (
+      bytes.length >= 4 &&
+      bytes[0] === 0x47 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x38
+    )
+      return true; // GIF
+    if (
+      bytes.length >= 12 &&
+      bytes[0] === 0x52 &&
+      bytes[1] === 0x49 &&
+      bytes[2] === 0x46 &&
+      bytes[3] === 0x46 &&
+      bytes[8] === 0x57 &&
+      bytes[9] === 0x45 &&
+      bytes[10] === 0x42 &&
+      bytes[11] === 0x50
+    ) {
+      return true; // WEBP
+    }
+    return false;
+  }
+
+  if (typeof file === 'string') {
+    if (
+      file.startsWith('data:image/jpeg;') ||
+      file.startsWith('data:image/png;') ||
+      file.startsWith('data:image/webp;') ||
+      file.startsWith('data:image/gif;')
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // Fallback for unsupported types like ReadableStream without consuming them
+  // In a real app we might consume the first few bytes of the stream, but here we just return false
+  return false;
+}
+
 /**
  * Helper function specifically for animal photo uploads with collision-resistant naming.
  *
@@ -75,6 +149,11 @@ export async function uploadAnimalPhoto(
   const validExtensions = /\.(jpg|jpeg|png|webp|gif)$/i;
   if (!validExtensions.test(originalFilename)) {
     throw new Error('Invalid file type. Only jpg, jpeg, png, webp, and gif are allowed.');
+  }
+
+  const isValidContent = await validateImageContent(file);
+  if (!isValidContent) {
+    throw new Error('Invalid file content. The file does not appear to be a valid image.');
   }
 
   const uniquePathname = generateUniqueFilename(originalFilename, 'animal-photos');

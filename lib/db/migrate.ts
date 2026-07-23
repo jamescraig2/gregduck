@@ -15,9 +15,11 @@ function loadEnv() {
       if (equalsIdx !== -1) {
         const key = trimmed.slice(0, equalsIdx).trim();
         let value = trimmed.slice(equalsIdx + 1).trim();
-        // Remove trailing comment if present (e.g. # comment)
-        if (value.includes('#')) {
-          value = value.split('#')[0].trim();
+        // Removed trailing comment truncation to support '#' in passwords
+        if (value.startsWith('"') && value.endsWith('"')) {
+          value = value.slice(1, -1);
+        } else if (value.startsWith("'") && value.endsWith("'")) {
+          value = value.slice(1, -1);
         }
         if (!process.env[key] && value) {
           process.env[key] = value;

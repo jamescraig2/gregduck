@@ -123,6 +123,32 @@ describe('Vercel Blob Storage Integration Service', () => {
       );
       expect(put).not.toHaveBeenCalled();
     });
+
+    it('should validate custom options merging', async () => {
+      process.env.BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_test_token';
+      const mockResult = {
+        url: 'https://blob.vercel-storage.com/photos/123-duck.jpg',
+      } as PutBlobResult;
+      vi.mocked(put).mockResolvedValueOnce(mockResult);
+
+      const buffer = Buffer.from('fake-image-data');
+      await uploadFile('photos/123-duck.jpg', buffer, {
+        access: 'public',
+        cacheControlMaxAge: 3600,
+        addRandomSuffix: false,
+      });
+
+      expect(put).toHaveBeenCalledWith(
+        'photos/123-duck.jpg',
+        buffer,
+        expect.objectContaining({
+          access: 'public',
+          token: 'vercel_blob_rw_test_token',
+          cacheControlMaxAge: 3600,
+          addRandomSuffix: false,
+        }),
+      );
+    });
   });
 
   describe('uploadAnimalPhoto', () => {
@@ -139,7 +165,7 @@ describe('Vercel Blob Storage Integration Service', () => {
 
       vi.mocked(put).mockResolvedValueOnce(mockResult);
 
-      const buffer = Buffer.from('duck-photo-binary');
+      const buffer = Buffer.from([0xff, 0xd8, 0xff, 0x00, 0x00, 0x00]);
       const res = await uploadAnimalPhoto(buffer, 'duck.jpg');
 
       expect(put).toHaveBeenCalledWith(
@@ -154,9 +180,30 @@ describe('Vercel Blob Storage Integration Service', () => {
     });
 
     it('should throw an error if the file extension is not an image', async () => {
-      const buffer = Buffer.from('fake-text-data');
+      const buffer = Buffer.from([0xff, 0xd8, 0xff, 0x00, 0x00, 0x00]);
       await expect(uploadAnimalPhoto(buffer, 'document.pdf')).rejects.toThrow(/Invalid file type/);
       expect(put).not.toHaveBeenCalled();
+    });
+
+    it('should handle case-insensitive extensions', async () => {
+      process.env.BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_test_token';
+      const mockResult = {
+        url: 'https://blob.vercel-storage.com/animal-photos/1.JPG',
+      } as PutBlobResult;
+      vi.mocked(put).mockResolvedValueOnce(mockResult);
+
+      const buffer = Buffer.from([0xff, 0xd8, 0xff, 0x00, 0x00, 0x00]);
+      await expect(uploadAnimalPhoto(buffer, 'DUCK.JPG')).resolves.toBeDefined();
+    });
+
+    it('should throw an error if the file has no extension', async () => {
+      const buffer = Buffer.from([0xff, 0xd8, 0xff, 0x00, 0x00, 0x00]);
+      await expect(uploadAnimalPhoto(buffer, 'duck')).rejects.toThrow(/Invalid file type/);
+    });
+
+    it('should throw an error if the file has an invalid image magic byte content', async () => {
+      const buffer = Buffer.from('not-an-image-really');
+      await expect(uploadAnimalPhoto(buffer, 'duck.jpg')).rejects.toThrow(/Invalid file content/);
     });
   });
 });
