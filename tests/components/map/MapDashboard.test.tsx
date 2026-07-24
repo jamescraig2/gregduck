@@ -10,6 +10,7 @@ import { MapDashboard } from '../../../components/map/MapDashboard';
 // Mock @vis.gl/react-google-maps to avoid needing Google Maps JS API in tests
 vi.mock('@vis.gl/react-google-maps', () => ({
   APIProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useMap: vi.fn(() => null),
   Map: ({
     children,
     onCameraChanged,
