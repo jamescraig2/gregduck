@@ -6,6 +6,7 @@ import { http, HttpResponse } from 'msw';
 import type { MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 import * as geolocationHook from '../../../components/map/useGeolocation';
 import { MapDashboard } from '../../../components/map/MapDashboard';
+import { CLEAN_MAP_STYLE } from '../../../lib/mapStyle';
 
 // Mock @vis.gl/react-google-maps to avoid needing Google Maps JS API in tests
 vi.mock('@vis.gl/react-google-maps', () => ({
@@ -14,12 +15,15 @@ vi.mock('@vis.gl/react-google-maps', () => ({
   Map: ({
     children,
     onCameraChanged,
+    styles,
   }: {
     children: React.ReactNode;
     onCameraChanged?: (ev: MapCameraChangedEvent) => void;
+    styles?: google.maps.MapTypeStyle[];
   }) => (
     <div
       data-testid="map"
+      data-has-custom-style={Boolean(styles && styles.length > 0)}
       onClick={() =>
         onCameraChanged?.({
           detail: {
@@ -124,5 +128,30 @@ describe('MapDashboard', () => {
     expect(container).toBeTruthy();
 
     vi.useRealTimers();
+  });
+
+  it('passes CLEAN_MAP_STYLE to Map component', () => {
+    render(<MapDashboard />);
+    const mapEl = screen.getByTestId('map');
+    expect(mapEl).toHaveAttribute('data-has-custom-style', 'true');
+  });
+
+  it('configures CLEAN_MAP_STYLE to hide poi and transit while preserving landscape.natural and locality', () => {
+    const poiStyle = CLEAN_MAP_STYLE.find((s) => s.featureType === 'poi');
+    expect(poiStyle?.stylers).toEqual(expect.arrayContaining([{ visibility: 'off' }]));
+
+    const transitStyle = CLEAN_MAP_STYLE.find((s) => s.featureType === 'transit');
+    expect(transitStyle?.stylers).toEqual(expect.arrayContaining([{ visibility: 'off' }]));
+
+    const terrainStyle = CLEAN_MAP_STYLE.find((s) => s.featureType === 'landscape.natural');
+    expect(terrainStyle?.stylers).toEqual(expect.arrayContaining([{ visibility: 'on' }]));
+
+    const localityStyle = CLEAN_MAP_STYLE.find((s) => s.featureType === 'locality');
+    const adminLocalityStyle = CLEAN_MAP_STYLE.find(
+      (s) => s.featureType === 'administrative.locality',
+    );
+    expect(localityStyle?.stylers || adminLocalityStyle?.stylers).toEqual(
+      expect.arrayContaining([{ visibility: 'on' }]),
+    );
   });
 });
