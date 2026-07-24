@@ -7,6 +7,7 @@ import { useDebounce } from '@/lib/useDebounce';
 import { MarkerData } from '@/types';
 import { AnimalMarkerClusterer } from './AnimalMarkerClusterer';
 import { AnimalTeaserDrawer } from './AnimalTeaserDrawer';
+import { CLEAN_MAP_STYLE } from '@/lib/mapStyle';
 
 export interface MapDashboardProps {
   className?: string;
@@ -74,6 +75,7 @@ export const MapDashboard: FC<MapDashboardProps> = ({ className = '' }) => {
           defaultZoom={13}
           defaultCenter={center}
           onCameraChanged={handleCameraChanged}
+          styles={CLEAN_MAP_STYLE}
           style={{ width: '100%', height: '100%' }}
         >
           <AnimalMarkerClusterer markers={markers} onSelect={setSelectedAnimal} />

@@ -10,3 +10,4 @@ export * from './map/MapDashboard';
 export * from './map/AnimalMarkerClusterer';
 export * from './map/AnimalTeaserDrawer';
 export * from './map/useGeolocation';
+export * from './layout/Header';

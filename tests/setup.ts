@@ -1,3 +1,4 @@
+import React from 'react';
 import '@testing-library/jest-dom';
 import { beforeAll, afterEach, afterAll, vi } from 'vitest';
 import { server } from './mocks/server';
@@ -35,9 +36,20 @@ vi.mock('@clerk/nextjs', () => ({
     getToken: vi.fn().mockResolvedValue('mock_token'),
   })),
   ClerkProvider: ({ children }: { children: React.ReactNode }) => children,
+  SignedIn: ({ children }: { children: React.ReactNode }) =>
+    React.createElement('div', { 'data-testid': 'clerk-signed-in' }, children),
+  SignedOut: ({ children }: { children: React.ReactNode }) =>
+    React.createElement('div', { 'data-testid': 'clerk-signed-out' }, children),
+  SignInButton: ({ children }: { children?: React.ReactNode }) =>
+    React.createElement(
+      'div',
+      { 'data-testid': 'clerk-sign-in-button' },
+      children || React.createElement('button', null, 'Sign In'),
+    ),
   SignIn: () => null,
   SignUp: () => null,
-  UserButton: () => null,
+  UserButton: () =>
+    React.createElement('div', { 'data-testid': 'clerk-user-button' }, 'UserButton'),
 }));
 
 // Mock Clerk Server
