@@ -1,0 +1,84 @@
+import os
+import json
+
+changes = [
+  {
+    "number": 15,
+    "action": "close",
+    "reason": "completed",
+    "labels_to_add": [],
+    "labels_to_remove": [],
+    "comment": "Closing as completed. The Gemini Vision API integration service has already been fully implemented in services/gemini/client.ts and verified with unit tests in tests/gemini.test.ts."
+  },
+  {
+    "number": 16,
+    "action": "update",
+    "labels_to_add": ["p0"],
+    "labels_to_remove": ["blocked"],
+    "comment": "Prioritizing as p0. All backend infrastructure dependencies (Gemini API integration, proximity matching engine, Vercel Blob storage handler, and database schemas) are fully implemented and tested, making /api/capture the immediate next-in-line unblocked API endpoint."
+  },
+  {
+    "number": 17,
+    "action": "update",
+    "labels_to_add": ["blocked"],
+    "labels_to_remove": ["p0", "p1", "p2"],
+    "body": "Web Camera & Capture UI Component for capturing photos and geolocation coordinates.\n\n## Dependencies\n- [ ] Blocked by #16 (Issue 5.3: Core Capture Coordinator Endpoint (/api/capture))",
+    "comment": "Marking as blocked by #16 and adding 'blocked' label while removing priority labels. The Web Camera & Capture UI component requires the /api/capture backend coordinator endpoint to process captured image payloads."
+  },
+  {
+    "number": 18,
+    "action": "update",
+    "labels_to_add": ["p1"],
+    "labels_to_remove": ["blocked"],
+    "comment": "Prioritizing as p1 unblocked feature. The database schema and H3 spatial location utilities are already in place, allowing the Google Maps interface with marker clustering to be implemented."
+  },
+  {
+    "number": 19,
+    "action": "update",
+    "labels_to_add": ["p1"],
+    "labels_to_remove": ["blocked"],
+    "comment": "Prioritizing as p1 unblocked feature. Clerk auth route middleware, user profile cache syncing, and UI design primitives (GlassCard, GlassPanel) are implemented, unblocking the Discovery Journal list view."
+  },
+  {
+    "number": 20,
+    "action": "update",
+    "labels_to_add": ["blocked"],
+    "labels_to_remove": ["p0", "p1", "p2"],
+    "title": "Feature: Animal Profile & Sighting Timeline UI",
+    "body": "# Feature: Animal Profile & Sighting Timeline UI\n\n## Description\nBuild the frontend Animal Profile component and sighting timeline UI. This component displays an individual animal's metadata (name, species, backstory, primary photo, discoverer) along with a chronological timeline of all recorded user sightings and encounters.\n\n## Dependencies\n- [ ] Blocked by #22 (Feature: Animal Detail & Sighting Timeline API Endpoint (GET /api/animals/[id]))\n\n## Acceptance Criteria\n- [ ] Render animal header with photo, name, species, backstory, discoverer profile, and discovery timestamp.\n- [ ] Render chronological timeline list of all user sightings with photos, usernames, and encounter dates.\n- [ ] Fetch data dynamically from `GET /api/animals/[id]`.\n- [ ] Include UI loading skeleton and user-friendly error states.",
+    "comment": "Groomed issue #20. Identified dependency on Issue #22 (GET /api/animals/[id]) for fetching animal metadata and encounter timelines. Applied 'blocked' label, updated title format, and added structured Acceptance Criteria and Dependencies."
+  },
+  {
+    "number": 21,
+    "action": "update",
+    "labels_to_add": ["quick", "p1"],
+    "labels_to_remove": ["blocked"],
+    "title": "Feature: User Discoveries & Encounters API Endpoint (GET /api/journal)",
+    "body": "# Feature: User Discoveries & Encounters API Endpoint (GET /api/journal)\n\n## Description\nImplement the `GET /api/journal` Next.js serverless route handler to serve the authenticated user's discovery and encounter journal entries. Queries database joining `encounters` and `animals` tables for the logged-in Clerk user.\n\n## Acceptance Criteria\n- [ ] Implement `GET /api/journal` Next.js route handler.\n- [ ] Authenticate request using Clerk (`auth()`); return HTTP 401 Unauthorized if unauthenticated.\n- [ ] Query database for current user's encounters joined with animal metadata.\n- [ ] Return JSON payload containing structured list of user discoveries and encounters.\n- [ ] Add unit/integration tests for both authenticated success and unauthenticated error cases.",
+    "comment": "Groomed issue #21. Confirmed as an unblocked backend API endpoint required for the Journal/Pokédex UI. Added 'quick' and 'p1' labels. Standardized title and added detailed Acceptance Criteria."
+  },
+  {
+    "number": 22,
+    "action": "update",
+    "labels_to_add": ["quick", "p1"],
+    "labels_to_remove": ["blocked"],
+    "title": "Feature: Animal Detail & Sighting Timeline API Endpoint (GET /api/animals/[id])",
+    "body": "# Feature: Animal Detail & Sighting Timeline API Endpoint (GET /api/animals/[id])\n\n## Description\nImplement the `GET /api/animals/[id]` Next.js serverless route handler to return complete details for a single animal by UUID, including discoverer info and all historical encounters sorted chronologically.\n\n## Acceptance Criteria\n- [ ] Implement `GET /api/animals/[id]` Next.js route handler.\n- [ ] Validate animal UUID parameter format; return HTTP 400 Bad Request for invalid format, HTTP 404 Not Found if record does not exist.\n- [ ] Query database for animal metadata, discoverer profile, and all associated encounters ordered by timestamp.\n- [ ] Return JSON payload containing animal profile data and timeline of encounters.\n- [ ] Add unit and integration tests covering valid ID retrieval, invalid format, and non-existent ID scenarios.",
+    "comment": "Groomed issue #22. Identified as an unblocked backend API endpoint prerequisite for Issue #20 (Animal Profile UI). Added 'quick' and 'p1' labels. Standardized title and added detailed Acceptance Criteria."
+  },
+  {
+    "number": 23,
+    "action": "update",
+    "labels_to_add": ["quick", "p0"],
+    "labels_to_remove": ["blocked"],
+    "title": "Feature: Animal Markers Viewport API Endpoint (GET /api/markers)",
+    "body": "# Feature: Animal Markers Viewport API Endpoint (GET /api/markers)\n\n## Description\nImplement the `GET /api/markers` Next.js serverless route handler to query and return animal map markers within given viewport bounding box coordinates (`minLat`, `maxLat`, `minLng`, `maxLng`) or H3 spatial index cell bounds.\n\n## Acceptance Criteria\n- [ ] Implement `GET /api/markers` Next.js route handler.\n- [ ] Parse and validate query parameters (`minLat`, `maxLat`, `minLng`, `maxLng`); return HTTP 400 Bad Request for missing or invalid bounds.\n- [ ] Query database for animal discovery markers falling within specified spatial bounding coordinates.\n- [ ] Return optimized JSON payload containing array of marker objects (id, name, species, photoUrl, latitude, longitude).\n- [ ] Add unit and integration tests verifying spatial bounding queries and coordinate validation.",
+    "comment": "Groomed issue #23. Confirmed as an unblocked core API endpoint required for the interactive map interface and marker clustering (Issue 4). Added 'quick' and 'p0' labels. Standardized title and added detailed Acceptance Criteria."
+  }
+]
+
+os.makedirs('scratch', exist_ok=True)
+with open('scratch/authorized_changes.json', 'w') as f:
+    json.dump(changes, f, indent=2)
+
+print('Saved scratch/authorized_changes.json successfully.')
