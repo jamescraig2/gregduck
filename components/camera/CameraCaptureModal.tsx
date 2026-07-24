@@ -9,6 +9,7 @@ export interface CameraCaptureModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: (result: any) => void;
+  onCaptureComplete?: (result: any) => void;
   onError?: (error: Error) => void;
 }
 
@@ -16,6 +17,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onCaptureComplete,
   onError,
 }) => {
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -126,6 +128,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
       const result = await response.json();
       onSuccess?.(result);
+      onCaptureComplete?.(result);
       handleClose();
     } catch (err: any) {
       const errorObj = err instanceof Error ? err : new Error(String(err));

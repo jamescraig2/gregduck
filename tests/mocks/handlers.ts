@@ -29,4 +29,20 @@ export const handlers = [
       ],
     });
   }),
+  http.post('/api/capture', async () => {
+    return HttpResponse.json({
+      isNewDiscovery: true,
+      animal: {
+        id: 'a1',
+        species: 'Mallard Duck',
+        name: 'Quackers',
+        imageUrl: 'https://mock.test/duck.jpg',
+      },
+      encounter: {
+        id: 'e1',
+        capturedAt: '2026-07-23T21:00:00.000Z',
+      },
+    });
+  }),
 ];
+
