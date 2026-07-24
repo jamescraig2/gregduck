@@ -5,6 +5,14 @@ import { animals } from '@/lib/db/schema';
 import { and, or, gte, lte, inArray, SQL } from 'drizzle-orm';
 import { isValidH3Index } from '@/services/location/h3';
 
+export function parseH3Indexes(h3Indexes?: string): string[] {
+  if (!h3Indexes) return [];
+  return h3Indexes
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
 const latitudeSchema = z
   .string()
   .refine((val) => val.trim().length > 0, { message: 'Latitude cannot be empty' })
@@ -46,12 +54,7 @@ const querySchema = z
       });
     }
 
-    const h3List = data.h3_indexes
-      ? data.h3_indexes
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
+    const h3List = parseH3Indexes(data.h3_indexes);
 
     if (!hasFullBbox && h3List.length === 0) {
       ctx.addIssue({
@@ -75,10 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (rawParams.h3_indexes) {
-      const h3List = rawParams.h3_indexes
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean);
+      const h3List = parseH3Indexes(rawParams.h3_indexes);
       for (const h3Index of h3List) {
         if (!isValidH3Index(h3Index)) {
           return NextResponse.json({ error: `Invalid H3 cell index: ${h3Index}` }, { status: 400 });
@@ -119,12 +119,7 @@ export async function GET(request: NextRequest) {
       conditions.push(and(latCondition, lngCondition)!);
     }
 
-    const h3List = parsed.h3_indexes
-      ? parsed.h3_indexes
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean)
-      : [];
+    const h3List = parseH3Indexes(parsed.h3_indexes);
 
     if (h3List.length > 0) {
       conditions.push(inArray(animals.h3Index, h3List));
