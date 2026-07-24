@@ -4,6 +4,7 @@ import {
   getLocalZone,
   isValidH3Index,
   h3IndexToLatLng,
+  calculateDistanceMeters,
   DEFAULT_H3_RESOLUTION,
 } from '../../services/location';
 
@@ -80,6 +81,27 @@ describe('Spatial Indexing Service (h3-js)', () => {
 
     it('should throw error for invalid H3 index', () => {
       expect(() => h3IndexToLatLng('not_a_valid_h3_cell')).toThrow(/Invalid H3 cell index/);
+    });
+  });
+
+  describe('calculateDistanceMeters', () => {
+    it('should return 0 when calculating distance between identical coordinates', () => {
+      const distance = calculateDistanceMeters(sfLat, sfLng, sfLat, sfLng);
+      expect(distance).toBe(0);
+    });
+
+    it('should accurately calculate distance between two known lat/lng points', () => {
+      // 1 degree latitude difference ~ 111.2km (111,195m with R=6371000)
+      const dist = calculateDistanceMeters(0, 0, 1, 0);
+      expect(dist).toBeGreaterThan(111000);
+      expect(dist).toBeLessThan(112000);
+    });
+
+    it('should throw error for invalid latitude or longitude parameters', () => {
+      expect(() => calculateDistanceMeters(95, 0, 0, 0)).toThrow(/Invalid latitude/);
+      expect(() => calculateDistanceMeters(0, 0, -95, 0)).toThrow(/Invalid latitude/);
+      expect(() => calculateDistanceMeters(0, -200, 0, 0)).toThrow(/Invalid longitude/);
+      expect(() => calculateDistanceMeters(0, 0, 0, 200)).toThrow(/Invalid longitude/);
     });
   });
 });
