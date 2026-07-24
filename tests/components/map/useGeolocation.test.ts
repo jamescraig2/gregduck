@@ -19,11 +19,10 @@ describe('useGeolocation', () => {
   it('returns GPS coordinates when navigator.geolocation succeeds', async () => {
     // Arrange
     const mockGetCurrentPosition = vi.fn().mockImplementation((success: PositionCallback) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       success({
         coords: { latitude: 37.7749, longitude: -122.4194, accuracy: 10 },
         timestamp: 0,
-      } as any);
+      } as GeolocationPosition);
     });
     Object.defineProperty(globalThis, 'navigator', {
       value: { geolocation: { getCurrentPosition: mockGetCurrentPosition } },
@@ -41,22 +40,20 @@ describe('useGeolocation', () => {
 
   it('falls back to ipapi.co when GPS fails', async () => {
     server.use(
-      http.get('https://ipapi.co/json/', () =>
+      http.get('/api/geolocation', () =>
         HttpResponse.json({ latitude: 40.7128, longitude: -74.006 }),
       ),
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mockGetCurrentPosition = vi
       .fn()
-      .mockImplementation((_: any, error: PositionErrorCallback) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .mockImplementation((_: PositionCallback, error: PositionErrorCallback) => {
         error({
           code: 1,
           PERMISSION_DENIED: 1,
           POSITION_UNAVAILABLE: 2,
           TIMEOUT: 3,
           message: 'denied',
-        } as any);
+        } as GeolocationPositionError);
       });
     Object.defineProperty(globalThis, 'navigator', {
       value: { geolocation: { getCurrentPosition: mockGetCurrentPosition } },
@@ -71,19 +68,17 @@ describe('useGeolocation', () => {
   });
 
   it('falls back to Minneapolis default when both GPS and ipapi.co fail', async () => {
-    server.use(http.get('https://ipapi.co/json/', () => HttpResponse.error()));
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    server.use(http.get('/api/geolocation', () => HttpResponse.error()));
     const mockGetCurrentPosition = vi
       .fn()
-      .mockImplementation((_: any, error: PositionErrorCallback) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .mockImplementation((_: PositionCallback, error: PositionErrorCallback) => {
         error({
           code: 3,
           PERMISSION_DENIED: 1,
           POSITION_UNAVAILABLE: 2,
           TIMEOUT: 3,
           message: 'timeout',
-        } as any);
+        } as GeolocationPositionError);
       });
     Object.defineProperty(globalThis, 'navigator', {
       value: { geolocation: { getCurrentPosition: mockGetCurrentPosition } },
@@ -99,8 +94,10 @@ describe('useGeolocation', () => {
 
   it('sets loading=true initially and loading=false after resolution', async () => {
     const mockGetCurrentPosition = vi.fn().mockImplementation((success: PositionCallback) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      success({ coords: { latitude: 0, longitude: 0, accuracy: 1 }, timestamp: 0 } as any);
+      success({
+        coords: { latitude: 0, longitude: 0, accuracy: 1 },
+        timestamp: 0,
+      } as GeolocationPosition);
     });
     Object.defineProperty(globalThis, 'navigator', {
       value: { geolocation: { getCurrentPosition: mockGetCurrentPosition } },
@@ -114,19 +111,39 @@ describe('useGeolocation', () => {
   });
 
   it('does not set state after unmount — cancelled flag prevents stale updates', async () => {
-    const consoleSpy = vi.spyOn(console, 'error');
-    // GPS never resolves (pending promise)
-    const mockGetCurrentPosition = vi.fn();
+    let resolveGps!: (coords: GeolocationPosition) => void;
+    const pendingGps = new Promise<GeolocationPosition>((resolve) => {
+      resolveGps = resolve;
+    });
+    const mockGetCurrentPosition = vi
+      .fn()
+      .mockImplementation((success: PositionCallback) => pendingGps.then(success));
     Object.defineProperty(globalThis, 'navigator', {
       value: { geolocation: { getCurrentPosition: mockGetCurrentPosition } },
       writable: true,
       configurable: true,
     });
 
-    const { unmount } = renderHook(() => useGeolocation());
+    const { unmount, result } = renderHook(() => useGeolocation());
+
+    // Capture center value before unmount — should still be the initial default
+    const centerBeforeUnmount = result.current.center;
+
+    // Unmount before GPS resolves
     unmount();
 
-    await act(async () => {});
-    expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('unmounted'));
+    // Now resolve GPS with a different position
+    await act(async () => {
+      resolveGps({
+        coords: { latitude: 55.0, longitude: 10.0, accuracy: 5 },
+        timestamp: Date.now(),
+      } as GeolocationPosition);
+      await Promise.resolve();
+    });
+
+    // Center should remain unchanged (default MINNEAPOLIS) because the hook was
+    // unmounted and the cancelled flag should have prevented any state update.
+    expect(result.current.center).toEqual(centerBeforeUnmount);
+    expect(result.current.center).toEqual({ lat: 44.9778, lng: -93.265 });
   });
 });

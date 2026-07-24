@@ -44,3 +44,6 @@ next-env.d.ts
 # Local settings/temp files for Antigravity
 .gemini/
 .agents/
+
+# Pipeline scratch artifacts
+/scratch/

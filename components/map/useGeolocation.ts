@@ -35,9 +35,9 @@ export function useGeolocation(): UseGeolocationResult {
         // fall through to Step 2
       }
 
-      // Step 2: IP geolocation via ipapi.co
+      // Step 2: IP geolocation via server-side proxy (avoids exposing user IP to third-party)
       try {
-        const res = await fetch('https://ipapi.co/json/');
+        const res = await fetch('/api/geolocation');
         const data = await res.json();
         if (!cancelled && typeof data.latitude === 'number' && typeof data.longitude === 'number') {
           setCenter({ lat: data.latitude, lng: data.longitude });
