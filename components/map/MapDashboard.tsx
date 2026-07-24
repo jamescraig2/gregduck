@@ -18,7 +18,7 @@ export const MapDashboard: FC<MapDashboardProps> = ({ className = '' }) => {
   // Bounds state — null until first camera event fires
   const [bounds, setBounds] = useState<google.maps.LatLngBoundsLiteral | null>(null);
   const [markers, setMarkers] = useState<MarkerData[]>([]);
-  const [selectedAnimal, _setSelectedAnimal] = useState<MarkerData | null>(null);
+  const [selectedAnimal, setSelectedAnimal] = useState<MarkerData | null>(null);
 
   // Debounce camera bounds by 300 ms to avoid per-frame API calls
   const debouncedBounds = useDebounce(bounds, 300);
@@ -38,12 +38,15 @@ export const MapDashboard: FC<MapDashboardProps> = ({ className = '' }) => {
     let cancelled = false;
 
     fetch(`/api/markers?${params}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`/api/markers responded ${res.status}`);
+        return res.json();
+      })
       .then((data: { markers: MarkerData[]; total: number }) => {
         if (!cancelled) setMarkers(data.markers);
       })
       .catch(() => {
-        // silently ignore — stale markers remain displayed
+        if (!cancelled) setMarkers([]);
       });
 
     return () => {
@@ -73,7 +76,7 @@ export const MapDashboard: FC<MapDashboardProps> = ({ className = '' }) => {
           onCameraChanged={handleCameraChanged}
           style={{ width: '100%', height: '100%' }}
         >
-          <AnimalMarkerClusterer markers={markers} />
+          <AnimalMarkerClusterer markers={markers} onSelect={setSelectedAnimal} />
           <AnimalTeaserDrawer animal={selectedAnimal} />
         </Map>
       </APIProvider>

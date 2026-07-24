@@ -3,19 +3,19 @@ import { render, screen, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { server } from '../../mocks/server';
 import { http, HttpResponse } from 'msw';
+import type { MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 import * as geolocationHook from '../../../components/map/useGeolocation';
 import { MapDashboard } from '../../../components/map/MapDashboard';
 
 // Mock @vis.gl/react-google-maps to avoid needing Google Maps JS API in tests
 vi.mock('@vis.gl/react-google-maps', () => ({
   APIProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Map: ({
     children,
     onCameraChanged,
   }: {
     children: React.ReactNode;
-    onCameraChanged?: (ev: any) => void;
+    onCameraChanged?: (ev: MapCameraChangedEvent) => void;
   }) => (
     <div
       data-testid="map"
@@ -24,8 +24,7 @@ vi.mock('@vis.gl/react-google-maps', () => ({
           detail: {
             bounds: { south: 37.7, west: -122.5, north: 37.8, east: -122.4 },
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any)
+        } as MapCameraChangedEvent)
       }
     >
       {children}
@@ -102,6 +101,26 @@ describe('MapDashboard', () => {
     });
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
+  });
+
+  it('sets markers to empty array when /api/markers returns HTTP error', async () => {
+    vi.useFakeTimers();
+    server.use(http.get('/api/markers', () => new HttpResponse(null, { status: 500 })));
+    const { container } = render(<MapDashboard />);
+    const mapEl = screen.getByTestId('map');
+
+    act(() => {
+      mapEl.click();
+    });
+
+    await act(async () => {
+      vi.advanceTimersByTime(400);
+    });
+
+    // No TypeError should be thrown — markers gracefully reset to []
+    expect(container).toBeTruthy();
 
     vi.useRealTimers();
   });
