@@ -36,6 +36,8 @@ vi.mock('@clerk/nextjs', () => ({
     getToken: vi.fn().mockResolvedValue('mock_token'),
   })),
   ClerkProvider: ({ children }: { children: React.ReactNode }) => children,
+  Show: ({ when, children }: { when: string; children: React.ReactNode }) =>
+    React.createElement('div', { 'data-testid': `clerk-${when}` }, children),
   SignedIn: ({ children }: { children: React.ReactNode }) =>
     React.createElement('div', { 'data-testid': 'clerk-signed-in' }, children),
   SignedOut: ({ children }: { children: React.ReactNode }) =>
