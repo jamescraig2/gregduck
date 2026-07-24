@@ -1,10 +1,9 @@
-import styles from './page.module.css';
+import { MapDashboard } from '@/components/map/MapDashboard';
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>Greg Duck</h1>
-      <p className={styles.tagline}>Discover the wildlife around you.</p>
+    <main className="relative w-full h-[calc(100vh-4rem)]">
+      <MapDashboard />
     </main>
   );
 }
