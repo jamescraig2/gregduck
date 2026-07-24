@@ -77,7 +77,11 @@ export const MapDashboard: FC<MapDashboardProps> = ({ className = '' }) => {
           style={{ width: '100%', height: '100%' }}
         >
           <AnimalMarkerClusterer markers={markers} onSelect={setSelectedAnimal} />
-          <AnimalTeaserDrawer animal={selectedAnimal} />
+          <AnimalTeaserDrawer
+            animal={selectedAnimal}
+            onClose={() => setSelectedAnimal(null)}
+            userPosition={center}
+          />
         </Map>
       </APIProvider>
     </div>
