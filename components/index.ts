@@ -6,3 +6,7 @@ export * from './camera/CaptureOverlay';
 export * from './camera/CameraCaptureModal';
 export * from './camera/DiscoveryModal';
 export * from './camera/EncounterModal';
+export * from './map/MapDashboard';
+export * from './map/AnimalMarkerClusterer';
+export * from './map/AnimalTeaserDrawer';
+export * from './map/useGeolocation';
